@@ -1,0 +1,35 @@
+# Versions figées (Python 3.14.3, environnement du 2026-10-15)
+numpy==2.4.4
+pandas==3.0.2
+pyarrow==23.0.1
+scipy==1.17.1
+scikit-learn==1.8.0
+imbalanced-learn==0.14.1
+lightgbm==4.6.0
+xgboost==3.2.0
+optuna==4.8.0
+shap==0.51.0
+statsmodels==0.14.6
+matplotlib==3.10.8
+seaborn==0.13.2
+tabulate==0.10.0
+nltk==3.10.3
+joblib==1.5.3
+PyYAML==6.0.3
+# NLP, deep learning, séries temporelles
+torch==2.14.1                  # version CPU (pip install torch --index-url https://download.pytorch.org/whl/cpu)
+transformers==5.19.0
+sentence-transformers==6.1.0
+langdetect==1.0.9
+umap-learn==0.5.12
+holidays==0.106
+# Notebooks
+jupyter==1.1.1
+ipykernel==7.2.0
+nbconvert==7.17.1
+nbformat==5.10.4
+# Téléchargement initial des données
+requests>=2.31
+tqdm>=4.66
+beautifulsoup4>=4.12
+xlsxwriter>=3.1
