@@ -1,0 +1,53 @@
+# Point de configuration unique du projet (Phase 0)
+seed: 42
+
+paths:
+  raw: data/raw
+  processed: data/processed
+  listings_raw: data/processed/listings_all.parquet
+  reviews_raw: data/processed/reviews_all.parquet
+  listings_clean: data/processed/listings_clean.parquet
+  models: models
+  figures: reports/figures
+  reports: reports
+
+# --- Taux de change vers EUR ---
+# Source : taux de référence BCE (data-api.ecb.europa.eu, série EXR D.<devise>.EUR.SP00.A), récupérés le 2026-10-15.
+# Fichier : data/external/ecb_fx_2026-09.csv (unités de devise pour 1 EUR). Pour chaque ville, on applique le taux
+# du dernier jour ouvré <= date de collecte de la ville (price_eur = price / taux). EUR = 1.
+fx:
+  file: data/external/ecb_fx_2026-09.csv
+  source: "BCE, taux de référence quotidiens (publiés vers 14h15 CET)"
+  fetched_on: "2026-10-15"
+  rule: "dernier fixing <= scrape_date de la ville"
+
+# --- Stratégie de validation (voir reports/validation_strategy.md) ---
+validation:
+  final_test:
+    n_splits: 7              # 1 pli sur 7 = ~14,3 % des annonces, groupé par (city, host_id), stratifié par ville
+    group_by: [city, host_id]
+    stratify_by: city        # fixé une fois (data/processed/split.parquet), utilisé une seule fois (phase 14)
+  scheme_A: {type: stratified_kfold, k: 5, stratify_by: city}
+  scheme_B: {type: leave_one_city_out, group: city}
+  scheme_C: {type: temporal_by_quote_checkin, enabled: true, cutoff: "2026-10-01", note: "1 seule collecte par ville : variante temporelle sur la date de check-in du devis, hôtes disjoints ; vrai split temporel possible avec le calendar (phase 10)"}
+
+targets:
+  regression: log_price_eur
+  classif_superhost: host_is_superhost
+  classif_price_tier: {by: city, quantiles: 3, labels: [bas, moyen, haut]}
+
+# Échantillonnage pour les étapes lourdes (SFS, SHAP, NLP...) ; à ajuster
+sampling:
+  heavy_steps_n: 50000
+  selection_n: 60000
+
+# --- Nettoyage (phase 2) ---
+cleaning:
+  amenity_min_freq: 0.01          # équipements conservés si présents dans >= 1 % des annonces (train)
+  price_iqr_k: 3.0                # clôtures de Tukey élargies (3 x IQR) sur log(price_eur), par ville, calculées sur le train
+  geo_max_km_from_center: 100     # au-delà : coordonnées jugées aberrantes
+  max_nights_sentinel: 1125       # maximum_nights plafonné (valeurs sentinelles type 2147483647)
+  clip_quantile: 0.999            # winsorisation de bedrooms / beds (quantile train)
+
+# Colonnes qui ne doivent JAMAIS être des features de la régression de prix (fuite / dérivées de la cible)
+leaky_columns: [estimated_revenue_l365d, estimated_occupancy_l365d, price, price_eur, log_price_eur]

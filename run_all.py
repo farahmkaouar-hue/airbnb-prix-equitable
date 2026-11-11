@@ -31,7 +31,6 @@ STEPS = [
     ("14 Modèle final + ouverture UNIQUE du test", ["-m", "src.final_model"]),
     ("12 Interprétabilité (SHAP, PDP)", ["-m", "src.interpret"]),
     ("13 Apport métier", ["-m", "src.business"]),
-    ("   Notebook final", ["tools/build_notebook.py"]),
 ]
 
 if __name__ == "__main__":

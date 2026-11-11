@@ -17,13 +17,25 @@ Le modèle sous-estime les logements très chers : au-delà de 600 € la nuit, 
 
 ## Contenu
 
-| Dossier | Contenu |
+| Fichier | Contenu |
 |---|---|
-| `notebooks/` | `00_projet_complet.ipynb` (le projet entier), puis exploration, nettoyage, variables et sélection |
-| `src/` | Code Python : nettoyage, variables, modèles, NLP sur les avis, clustering, intervalles de prédiction |
-| `reports/` | Rapport final |
+| `notebooks/00_projet_complet.ipynb` | Le projet entier : audit, nettoyage, variables, sélection, validation, modèles, NLP sur les avis, interprétation |
+| `src/` | Le code de chaque étape, lancé dans l'ordre par `run_all.py` |
+| `config.yaml` | Paramètres du projet : graine, chemins, règles de nettoyage, schémas de validation |
+| `download_airbnb.py`, `merge_airbnb.py` | Téléchargement et fusion des données des 15 villes |
+| `predict.py` | Prix estimé et fourchette à 90 % pour une nouvelle annonce |
 | `Projet_prix_Airbnb_rapport_detaille.pdf` | Rapport détaillé |
 
-Les données brutes (plusieurs Go) ne sont pas incluses. Elles sont téléchargeables sur [Inside Airbnb](https://insideairbnb.com).
+## Lancer le projet
 
-Technologies : Python, pandas, LightGBM, PyTorch, scikit-learn.
+```bash
+pip install -r requirements.txt
+python download_airbnb.py && python merge_airbnb.py   # données Inside Airbnb (plusieurs Go)
+python run_all.py                                      # toutes les étapes, graine fixée à 42
+```
+
+## Données
+
+Les données ne sont pas incluses (plusieurs Go). Elles proviennent d'[Inside Airbnb](https://insideairbnb.com/get-the-data/), sous licence [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Inside Airbnb n'est pas affilié à Airbnb, Inc.
+
+Technologies : Python, pandas, LightGBM, PyTorch, scikit-learn, Optuna.
